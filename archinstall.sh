@@ -61,14 +61,21 @@ echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $HOSTNAME" >> /mnt/etc/ho
 echo "Setup password:"
 passwd
 
+sleep 3
+
 arch-chroot /mnt pacman -S grub
+sleep 3
 if ["$BOOT_TYPE"]=="uefi" ]; then
+  sleep 3
   arch-chroot /mnt pacman -S efibootmgr
+  sleep 3
   arch-chroot /mnt grub-install --target=i386-pc --efi-directory=$BOOTPART --recheck
 else
   read -p "Please output device, like [/dev/{name}]:" DEVICE
   arch-chroot /mnt grub-install --target=i386-pc --recheck $DEVICE
 fi
+sleep 3
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+sleep 20
 reboot
 exit
