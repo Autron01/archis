@@ -3,7 +3,9 @@
 echo "Wrong inputs might break the script, be careful!"
 sleep 2
 
+echo "test:"
 timedatectl set ntp true
+echo ":test"
 read -p "Please output keyboard setup, if not sure output us:" KEYBOARD
 loadkeys $KEYBOARD
 
@@ -67,11 +69,11 @@ sleep 3
 if [ "$BOOT_TYPE"=="uefi" ]; then
   arch-chroot /mnt pacman -S efibootmgr
   sleep 3
-  arch-chroot /mnt grub-install --target=i386-pc --efi-directory=$BOOTPART --recheck
+  arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=grub --efi-directory=/boot
 else
   read -p "Please output device, like [/dev/{name}]:" DEVICE
   sleep 3
-  arch-chroot /mnt grub-install --target=i386-pc --recheck $DEVICE
+  arch-chroot /mnt grub-install --target=i386-pci $DEVICE
 fi
 sleep 3
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
