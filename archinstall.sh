@@ -2,7 +2,7 @@
 
 echo "Wrong inputs might break the script, be careful!"
 
-timedatectl set ntp true
+timedatectl set-ntp true
 
 read -p "Please output keyboard setup, if not sure output us: " KEYBOARD
 loadkeys $KEYBOARD
@@ -25,10 +25,10 @@ mkfs.ext4 $FILESYSTEM
 mkswap $SWAPPART
 mkfs.fat -F32 $BOOTPART
 
+mount $FILESYSTEM /mnt
 if [! -d /mnt/boot]; then
   mkdir /mnt/boot
 fi
-mount $FILESYSTEM /mnt
 mount $BOOTPART /mnt/boot
 swapon $SWAPPART
 
@@ -46,16 +46,13 @@ sed -i "s/#$LOCALE/$LOCALE/g" /etc/locale.gen
 sed -i "s/#$LOCALE/$LOCALE/g" /mnt/etc/locale.gen
 locale-gen
 arch-chroot /mnt locale-gen
-touch /mnt/etc/locale.conf
 echo "LANG=$LOCALE" >> /mnt/etc/locale.conf
-touch /mnt/etc/vconsole.conf
 echo "KEYMAP=$KEYBOARD" >> /mnt/etc/vsconsole.conf
 
 read -p "Please output hostname: " HOSTNAME
 
-touch /mnt/etc/hostname
 echo "$HOSTNAME" >> /mnt/etc/hostname
-echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $HOSTNAME" >> /mnt/etc/hostname
+echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $HOSTNAME" >> /mnt/etc/hosts
 echo "Setup password: "
 passwd
 
@@ -69,5 +66,5 @@ else
   arch-chroot /mnt grub-install --target=i386-pci $DEVICE
 fi
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-arch-chroot /mnt
+arch-chroot /mnt reboot
 exit
