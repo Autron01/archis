@@ -52,7 +52,7 @@ read -p "Please output hostname: " HOSTNAME
 echo "$HOSTNAME" >> /mnt/etc/hostname
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $HOSTNAME" >> /mnt/etc/hosts
 echo "Setup password: "
-arch-chroot passwd
+arch-chroot /mnt passwd
 
 arch-chroot /mnt pacman -S grub
 if [ "$BOOT_TYPE"=="uefi" ]; then
