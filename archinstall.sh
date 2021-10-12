@@ -65,9 +65,11 @@ fi
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 arch-chroot /mnt pacman -S dhcpcd
 arch-chroot /mnt sytemctl enable dhcpcd
+arch-chroot /mnt sytemctl enable dhcpcd.service
 #download archsetup.sh on /
+arch-chroot /mnt curl -sL https://raw.githubusercontent.com/Autron01/archis/archusersetup.sh > archusersetup.sh
 echo "After reboot login with Username root and the password you set"
-echo "After that run archsetup.sh from / directory, it will create a user and reboot, proceed"
+echo "After that run archusersetup.sh from / directory, it will create a user and reboot, proceed"
 sleep 3
 reboot
 exit
