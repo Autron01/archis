@@ -1,16 +1,13 @@
 #!/bin/bash
 
 echo "Wrong inputs might break the script, be careful!"
-sleep 2
 
-echo "test:"
 timedatectl set ntp true
-echo ":test"
-read -p "Please output keyboard setup, if not sure output us:" KEYBOARD
+
+read -p "Please output keyboard setup, if not sure output us: " KEYBOARD
 loadkeys $KEYBOARD
 
-echo "Please partion according to you boot type"
-sleep 2
+echo "Please partion according to you boot type "
 cfdisk
 
 if [ -d /sys/firmware/efi ]; then
@@ -19,10 +16,10 @@ else
   BOOT_TYPE="bios";
 fi
 
-echo "Please output the name of your partitions [/dev/{name}{nr}]:"
-read -p "Filesystem partition:" FILESYSTEM
-read -p "SWAP partition:" SWAPPART
-read -p "BOOT partition:" BOOTPART
+echo "Please output the name of your partitions [/dev/{name}{nr}]: "
+read -p "Filesystem partition: " FILESYSTEM
+read -p "SWAP partition: " SWAPPART
+read -p "BOOT partition: " BOOTPART
 
 mkfs.ext4 $FILESYSTEM 
 mkswap $SWAPPART
@@ -38,13 +35,13 @@ swapon $SWAPPART
 pacstrap /mnt base linux linux-firmware base-devel
 genfstab -U /mnt >> /mnt/etc/fstab
 
-read -p "Please output timezone Region" REGION
-read -p "Please output timezone City" CITY
+read -p "Please output timezone Region: " REGION
+read -p "Please output timezone City: " CITY
 
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/$REGION/$CITY /etc/localtime
 arch-chroot /mnt hwclock --systohc
 
-read -p "Please output LOCALE, if not sure output en_US.UTF-8" LOCALE
+read -p "Please output LOCALE, if not sure output en_US.UTF-8: " LOCALE
 sed -i "s/#$LOCALE/$LOCALE/g" /etc/locale.gen
 sed -i "s/#$LOCALE/$LOCALE/g" /mnt/etc/locale.gen
 locale-gen
@@ -54,29 +51,23 @@ echo "LANG=$LOCALE" >> /mnt/etc/locale.conf
 touch /mnt/etc/vconsole.conf
 echo "KEYMAP=$KEYBOARD" >> /mnt/etc/vsconsole.conf
 
-read -p "Please output hostname" HOSTNAME
+read -p "Please output hostname: " HOSTNAME
 
 touch /mnt/etc/hostname
 echo "$HOSTNAME" >> /mnt/etc/hostname
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $HOSTNAME" >> /mnt/etc/hostname
-echo "Setup password:"
+echo "Setup password: "
 passwd
 
-sleep 3
 
 arch-chroot /mnt pacman -S grub
-sleep 3
 if [ "$BOOT_TYPE"=="uefi" ]; then
   arch-chroot /mnt pacman -S efibootmgr
-  sleep 3
   arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=grub --efi-directory=/boot
 else
-  read -p "Please output device, like [/dev/{name}]:" DEVICE
-  sleep 3
+  read -p "Please output device, like [/dev/{name}]: " DEVICE
   arch-chroot /mnt grub-install --target=i386-pci $DEVICE
 fi
-sleep 3
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-sleep 20
-reboot
+arch-chroot /mnt
 exit
