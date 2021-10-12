@@ -26,9 +26,7 @@ mkswap $SWAPPART
 mkfs.fat -F32 $BOOTPART
 
 mount $FILESYSTEM /mnt
-if [! -d /mnt/boot]; then
-  mkdir /mnt/boot
-fi
+mkdir /mnt/boot
 mount $BOOTPART /mnt/boot
 swapon $SWAPPART
 
@@ -66,5 +64,8 @@ else
   arch-chroot /mnt grub-install --target=i386-pci $DEVICE
 fi
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-arch-chroot /mnt reboot
+arch-chroot /mnt pacman -S dhcpcd
+arch-chroot /mnt sytemctl enable dhcpcd
+#download archsetup.sh on /mnt/home
+reboot
 exit
