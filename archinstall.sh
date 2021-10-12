@@ -52,8 +52,7 @@ read -p "Please output hostname: " HOSTNAME
 echo "$HOSTNAME" >> /mnt/etc/hostname
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $HOSTNAME" >> /mnt/etc/hosts
 echo "Setup password: "
-passwd
-
+arch-chroot passwd
 
 arch-chroot /mnt pacman -S grub
 if [ "$BOOT_TYPE"=="uefi" ]; then
@@ -66,6 +65,9 @@ fi
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 arch-chroot /mnt pacman -S dhcpcd
 arch-chroot /mnt sytemctl enable dhcpcd
-#download archsetup.sh on /mnt/home
+#download archsetup.sh on /
+echo "After reboot login with Username root and the password you set"
+echo "After that run archsetup.sh from / directory, it will create a user and reboot, proceed"
+sleep 3
 reboot
 exit
